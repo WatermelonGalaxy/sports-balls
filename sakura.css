@@ -13,19 +13,31 @@ html {
   body {
     font-size: 1.8rem;
     line-height: 1.618;
-    max-width: 38em;
+    /* max-width: 38em; */
+    max-width: 60%;
     margin: auto;
     color: #c9c9c9;
     background-color: #222222;
     padding: 13px;
   }
   
-  @media (max-width: 684px) {
+  /* @media (max-width: 684px) { Origianl CSS
     body {
       font-size: 1.53rem;
     }
   }
   @media (max-width: 382px) {
+    body {
+      font-size: 1.35rem;
+    }
+  } */
+
+  @media (max-width: 80%) {
+    body {
+      font-size: 1.53rem;
+    }
+  }
+  @media (max-width: 80%) {
     body {
       font-size: 1.35rem;
     }
@@ -121,7 +133,7 @@ html {
     height: auto;
     max-width: 100%;
     margin-top: 0px;
-    margin-bottom: 2.5rem;
+    /* margin-bottom: 2.5rem; */
   }
   
   /* Pre and Code */
