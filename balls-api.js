@@ -5,6 +5,9 @@ async function getTeams() {
     fetch('https://www.balldontlie.io/api/v1/teams')
     .then(response => response.json())
     .then(data => {
+        const parentContainer = document.createElement('div');
+        parentContainer.className = 'parent-container';
+
         const teamsList = document.getElementById('teams-list');
         const eastTeams = document.createElement('div');
         const westTeams = document.createElement('div');
@@ -21,8 +24,15 @@ async function getTeams() {
             }
         });
 
-        teamsList.appendChild(eastTeams);
-        teamsList.appendChild(westTeams);
+        // append the east and west teams to the parent container
+        parentContainer.appendChild(eastTeams);
+        parentContainer.appendChild(westTeams);
+
+        // append the parent container to the teams list
+        teamsList.appendChild(parentContainer);
+        // make parent container a flecbox
+        parentContainer.style.display = 'flex';
+        parentContainer.justifyContent = 'space-between';
     })
     .catch(error => console.error('Error:', error));
 }
