@@ -1,77 +1,84 @@
 
-// Create a Function BALLDONTLIE API to get the list of teams
-// https://www.balldontlie.io/api/v1/teams
-async function getTeams() {
-    fetch('https://www.balldontlie.io/api/v1/teams')
-    .then(response => response.json())
-    .then(data => {
-        const parentContainer = document.createElement('div');
-        parentContainer.className = 'parent-container';
 
-        const teamsList = document.getElementById('teams-list');
-        const eastTeams = document.createElement('div');
-        const westTeams = document.createElement('div');
-        eastTeams.innerHTML = '<h2>Eastern Conference</h2>';
-        westTeams.innerHTML = '<h2>Western Conference</h2>';
+// API Calls ************************************************************************************************************************************
+// Get NHL Standings
+async function getCurrentStandings() {
+    const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+    const targetUrl = 'https://api-web.nhle.com/v1/standings/now';
+    const response = await fetch(proxyUrl + targetUrl);
+    const data = await response.json();
 
-        data.data.forEach(team => {
-            const listItem = document.createElement('p');
-            listItem.textContent = team.full_name;
-            if (team.conference === 'East') {
-                eastTeams.appendChild(listItem);
-            } else {
-                westTeams.appendChild(listItem);
-            }
-        });
+    const teamsList = document.getElementById('teams-list');
+    const eastTeams = document.createElement('div');
+    const westTeams = document.createElement('div');
+    eastTeams.innerHTML = '<h2>Eastern Conference</h2>';
+    westTeams.innerHTML = '<h2>Western Conference</h2>';
 
-        // append the east and west teams to the parent container
-        parentContainer.appendChild(eastTeams);
-        parentContainer.appendChild(westTeams);
+    const divisions = ['Atlantic', 'Metropolitan', 'Central', 'Pacific'];
+    const eastDivisions = {};
+    const westDivisions = {};
 
-        // append the parent container to the teams list
-        teamsList.appendChild(parentContainer);
-        // make parent container a flecbox
-        parentContainer.style.display = 'flex';
-        parentContainer.justifyContent = 'space-between';
-    })
-    .catch(error => console.error('Error:', error));
+    console.log(data);
+    divisions.forEach(division => {
+        eastDivisions[division] = document.createElement('div');
+        westDivisions[division] = document.createElement('div');
+        eastDivisions[division].innerHTML = `<h3>${division} Division</h3>`;
+        westDivisions[division].innerHTML = `<h3>${division} Division</h3>`;
+    });
+
+    console.log(data.standings[0].teamName);
+
+    data.standings.forEach(team => {
+        const listItem = document.createElement('p');
+        listItem.textContent = team.teamName.default;
+        //console.log(team.teamName.default);
+        if (team.conferenceName === 'Eastern') {
+            eastDivisions[team.divisionName].appendChild(listItem);
+        } else {
+            westDivisions[team.divisionName].appendChild(listItem);
+        }
+    });
+
+    divisions.forEach(division => {
+        eastTeams.appendChild(eastDivisions[division]);
+        westTeams.appendChild(westDivisions[division]);
+    });
+
+    teamsList.appendChild(eastTeams);
+    teamsList.appendChild(westTeams);
+
+    console.log(data);
+
+    return data;
+}
+// Helper Functions *******************************************************************************************************************************
+
+// Create a function to delay to follow API rate limits
+function delay(time) {
+    return new Promise(resolve => setTimeout(resolve, time));
 }
 
-// Create a function to get the current Season Team Record
-// https://www.balldontlie.io/api/v1/games?seasons[]=2019&team_ids[]=14
-async function getTeamRecord() {
-    fetch('https://www.balldontlie.io/api/v1/games?seasons[]=2023&team_ids[]=14')
-    .then(response => response.json())
-    .then(data => {
-        const teamRecord = document.getElementById('team-record');
-        const teamRecordList = document.createElement('div');
-        teamRecordList.innerHTML = '<h2>Team Record</h2>';
-        console.log(data);
-
-        data.data.forEach(team => {
-            const listItem = document.createElement('p');
-            listItem.textContent = team.full_name;
-            teamRecordList.appendChild(listItem);
-        });
-
-        teamRecord.appendChild(teamRecordList);
-    })
-    .catch(error => console.error('Error:', error));
-}
 
 
-
-
-
+// DOM Functions **********************************************************************************************************************
 
 // DOM Content Loaded
 document.addEventListener("DOMContentLoaded", async (event) => {
-  // Get the teams from the API
-  const teams = await getTeams();
-  console.log(teams);
+ 
 
-    // Get the team record from the API
-    const teamRecord = await getTeamRecord();
-    console.log(teamRecord);
+  // Check which page is loaded and call appropriate functions
+    if (window.location.pathname === '/index.html') {
+        const teams = await getCurrentStandings();
+        console.log(teams);
+    } else if (window.location.pathname === '/players.html') {
+        console.log('players page');
+        const players = await getPlayers();
+        console.log(players);
+    } else if (window.location.pathname === '/player.html') {
+        const player = await getPlayer();
+        console.log(player);
+    }
+
+  
 
 });
