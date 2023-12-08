@@ -4,6 +4,7 @@ async function getCurrentStandings() {
   const proxyUrl = "https://cors-anywhere.herokuapp.com/";
   const targetUrl = "https://api-web.nhle.com/v1/standings/now";
   const response = await fetch(proxyUrl + targetUrl);
+  console.log(response);
   const data = await response.json();
 
   const teamsList = document.getElementById("teams-list");
@@ -21,18 +22,21 @@ async function getCurrentStandings() {
     const row = document.createElement("tr");
     const logoCell = document.createElement("td");
     const nameCell = document.createElement("td");
+    const abrvCell = document.createElement("td");
     const winCell = document.createElement("td");
     const lossCell = document.createElement("td");
     const otLossCell = document.createElement("td");
 
     logoCell.innerHTML = `<img src = "${team.teamLogo}" width = "100px" height = "100px">`;
     nameCell.textContent = team.teamName.default;
+    abrvCell.textContent = team.teamAbbrev.default;
     winCell.textContent = `${team.wins}`;
     lossCell.textContent = `${team.losses}`;
     otLossCell.textContent = `${team.otLosses}`;
 
     row.appendChild(logoCell);
     row.appendChild(nameCell);
+    row.appendChild(abrvCell);
     row.appendChild(winCell);
     row.appendChild(lossCell);
     row.appendChild(otLossCell);
@@ -68,7 +72,7 @@ async function getCurrentStandings() {
         eastDivisions[team.divisionName] = document.createElement("table");
         eastDivisions[
           team.divisionName
-        ].innerHTML = `<thead><tr><th></th><th>${team.divisionName}</th><th style="text-align: center;">Wins</th><th style="text-align: center;">Losses</th><th style="text-align: center;">OT Losses</th></tr></thead>`;
+        ].innerHTML = `<thead><tr><th></th><th>${team.divisionName}</th><th>Abrv</th><th style="text-align: center;">Wins</th><th style="text-align: center;">Losses</th><th style="text-align: center;">OT Losses</th></tr></thead>`;
         eastTeams.appendChild(eastDivisions[team.divisionName]);
       }
       eastDivisions[team.divisionName].appendChild(row);
@@ -77,7 +81,7 @@ async function getCurrentStandings() {
         westDivisions[team.divisionName] = document.createElement("table");
         westDivisions[
           team.divisionName
-        ].innerHTML = `<thead><tr><th></th><th>${team.divisionName}</th><th style="text-align: center;">Wins</th><th style="text-align: center;">Losses</th><th style="text-align: center;">OT Losses</th></tr></thead>`;
+        ].innerHTML = `<thead><tr><th></th><th>${team.divisionName}</th><th>"Abrv"</th><th style="text-align: center;">Wins</th><th style="text-align: center;">Losses</th><th style="text-align: center;">OT Losses</th></tr></thead>`;
         westTeams.appendChild(westDivisions[team.divisionName]);
       }
       westDivisions[team.divisionName].appendChild(row);
@@ -89,6 +93,48 @@ async function getCurrentStandings() {
 
   return data;
 }
+
+
+// Create a function to get a teams current roster
+async function getPlayers(teamAbbreviation) {
+  const proxyUrl = "https://cors-anywhere.herokuapp.com/";
+  const targetUrl = `https://api-web.nhle.com/v1/roster/${teamAbbreviation}/current`;
+  const response = await fetch(proxyUrl + targetUrl);
+  console.log(response);
+  const data = await response.json();
+
+  const playersList = document.getElementById("players-list");
+
+
+  const positions = ['goalies', 'forwards', 'defensemen'];
+
+  positions.forEach((position) => {
+      data[position].forEach((player) => {
+          const row = document.createElement("tr");
+          const playerImageCell = document.createElement("td");
+          const nameCell = document.createElement("td");
+          const numberCell = document.createElement("td");
+          const positionCell = document.createElement("td");
+  
+          playerImageCell.innerHTML = `<img src = "${player.headshot}" width = "100px" height = "100px">`;
+          numberCell.textContent = "#" + player.sweaterNumber;
+          nameCell.textContent = player.firstName.default + " " + player.lastName.default;
+          positionCell.textContent = player.positionCode;
+  
+          row.appendChild(playerImageCell);
+          row.appendChild(numberCell);
+          row.appendChild(nameCell);
+          row.appendChild(positionCell);
+  
+          playersList.appendChild(row);
+      });
+  });
+
+  console.log(data);
+  return data;
+}
+
+
 // Helper Functions *******************************************************************************************************************************
 
 // Create a function to delay to follow API rate limits
@@ -100,16 +146,32 @@ function delay(time) {
 
 // DOM Content Loaded
 document.addEventListener("DOMContentLoaded", async (event) => {
-  // Check which page is loaded and call appropriate functions
-  if (window.location.pathname === "/index.html") {
-    const teams = await getCurrentStandings();
-    console.log(teams);
-  } else if (window.location.pathname === "/players.html") {
-    console.log("players page");
-    const players = await getPlayers();
-    console.log(players);
-  } else if (window.location.pathname === "/player.html") {
-    const player = await getPlayer();
-    console.log(player);
+
+  
+
+  // check which url is being used and load the appropriate page
+  const url = window.location.href;
+  const urlSplit = url.split("/");
+  const page = urlSplit[urlSplit.length - 1];
+  console.log(page);
+
+  if (page === "index.html") {
+    // Get the current standings
+    const standings = await getCurrentStandings();
   }
+
+  if (page === "players.html") {
+    // Get the current roster
+    const roster = await getPlayers("ANA");
+  }
+
+  if (page === "teams.html") {
+    // Get the current roster
+    const roster = await getPlayers("ANA");
+  }
+
+  // 
+
+
 });
+
