@@ -436,7 +436,7 @@ details[open]::before {
     height: 0;
   }
   100% {
-    height: 312px;
+    height: 180px;
   }
 }
 @keyframes fadeMe {
