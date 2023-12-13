@@ -1,9 +1,9 @@
 // API Calls ************************************************************************************************************************************
 // Get NHL Standings
 async function getCurrentStandings() {
-  //const proxyUrl = "https://cors-anywhere.herokuapp.com/";
+  const proxyUrl = "https://cors-anywhere.herokuapp.com/";
   const targetUrl = "https://api-web.nhle.com/v1/standings/now";
-  const response = await fetch(targetUrl);
+  const response = await fetch(proxyUrl + targetUrl);
   console.log(response);
   const data = await response.json();
 
@@ -103,9 +103,9 @@ async function getCurrentStandings() {
 }
 
 async function getCurrentStandingsObj() {
-  //const proxyUrl = "https://cors-anywhere.herokuapp.com/";
+  const proxyUrl = "https://cors-anywhere.herokuapp.com/";
   const targetUrl = "https://api-web.nhle.com/v1/standings/now";
-  const response = await fetch(targetUrl);
+  const response = await fetch(proxyUrl + targetUrl);
   console.log(response);
   const data = await response.json();
 
@@ -114,9 +114,9 @@ async function getCurrentStandingsObj() {
 
 // Create a function to get a teams current roster
 async function getPlayers(teamAbbreviation) {
-  //const proxyUrl = "https://cors-anywhere.herokuapp.com/";
+  const proxyUrl = "https://cors-anywhere.herokuapp.com/";
   const targetUrl = `https://api-web.nhle.com/v1/roster/${teamAbbreviation}/current`;
-  const response = await fetch(targetUrl);
+  const response = await fetch(proxyUrl + targetUrl);
   console.log(response);
   const data = await response.json();
 
